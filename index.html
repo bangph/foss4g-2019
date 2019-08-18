@@ -1,0 +1,1023 @@
+<html>
+
+<head>    
+    <meta charset="utf-8">
+    <title>
+        FOSS4G 2019 - Rasdaman KOMPSAT 3 - Bang Pham Huu
+    </title>
+    
+    <link rel="stylesheet" href="bootstrap-3.3.4/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-slider-5.0.13/bootstrap-slider.min.css">
+
+        
+    <style>
+        a {
+            color: #31A2F7;
+        }
+        
+        a:hover {
+            color: #7ac6cf;
+        }
+        
+        #left-panel {
+            overflow:hidden;
+            background-color: rgb(51,51,80);
+            height: 100vh;
+            max-height: 100vh;
+            border-right: 1px solid red;
+            font-size: 12px;
+        }
+
+        #top-left {
+            background-color: white;
+            
+            padding: 0 20px;
+            border-radius: 5px;
+            margin: 10px 0px 10px 10px;                            
+        }
+
+        #top-left img {       
+            text-align: center;     
+            width: 50px;
+            height: 36px;
+            margin: 5px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .top-left-div {
+            background-color: #e6e6e6;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            border-radius: 5px;
+            margin: 15px 0px 10px 10px;    
+            padding-left: 30px;        
+            padding-right: 30px;    
+            padding-bottom: 15px;
+        }
+
+        .nav-tabs > li.active > a {
+            background-color:white !important;
+            border: 1 px !important;
+            border-radius: 5px;
+            font-weight: 900;
+            color: #4c398c !important;
+        }
+
+        .nav-tabs > li > a {
+            color: grey;
+        }
+
+        .top-left-heading {
+            text-align: center;   
+            font-family: Segoe UI;            
+            font-size: 14px;
+            color: black;
+        }
+
+        .selected-text {            
+            color: #2e6da4;
+        }
+
+        .section-container {
+            border: solid #909090 1px;
+            border-radius: 5px;
+            padding: 10px 15px 10px 15px;
+            margin-top: 10px;
+        }
+
+        .row.bands {
+            margin: 10px 10px 10px 0px;
+        }
+        
+        #top-center {            
+            position: absolute;            
+            background-color: rgb(15, 22, 53, 0.7);
+            border-right: 1px solid red;
+            border-bottom: 1px solid red;
+            width: 60vw;
+            height: 9vh;
+            color: yellow;            
+            font-size: 18px;
+        }
+
+        #top-center-middle {                 
+            position: relative;
+            top: 20%;            
+            padding-left: 20px;
+        }
+
+        .wcps-demo-container {
+            display: flex;
+            padding: 10px;
+            border-bottom: 1px solid red;
+            margin-left: -10px;
+            margin-right: 10px;            
+        }
+
+        .wcps-demo-text {
+            margin-top: -5px;
+        }
+
+        .wcps-demo-icon {
+            width: 100px;
+            height: 110px;                        
+            margin-right: 10px;
+            border: 1px solid rgb(234, 28, 28);
+            border-radius: 4px;            
+        }
+
+        /* Show generated WCPS query */
+        .wcps-info-button {
+            font-size: 10px;
+        }
+
+        .wcps-demo-radio-label {
+            font-weight: bold !important;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div style="overflow: hidden;">
+        <div class="row">
+
+            <div class="col-sm-3" id="left-panel">
+                <div id="top-left">
+                    <div style="margin-left: 10%;">
+                        <a href="http://rasdaman.org"><img src="asset/rasdaman-logo.png"/></a>
+                        <a href="http://www.si-imaging.com/"><img src="asset/logo_siis-346x178.png"/></a>
+                        <a href="https://worldwind.arc.nasa.gov/web/"><img src="asset/nasa.png"/></a>                    
+                        <a href="https://github.com/bangph"><img src="asset/Octocat.png"/></a>
+                    </div>
+                </div>
+
+                <div class="top-left-div">
+                    <br/>
+                    <!-- sliders for subsetting -->
+                    <div class="section-container">                                    
+
+                        <p class="top-left-heading">Axes Subsets On 3D Coverage</p>
+
+                        <div class="form-group">
+                            <label style="margin-right: 10px;">Slicing On <span style="color: red;">Date Axis</span>:</label>  <b><span id="wcsSelectedDate" class="selected-text" style="float: right; color: red;"> </span></b> <br/>
+                            <input id="wcsDateSlider" style="width: 55%;" type="text" data-slider-tooltip="hide" />
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-right: 10px;">Trimming On <span style="color: green;">Latitude Axis</span>:</label>  <b><span id="wcsSelectedLat" class="selected-text" style="float: right; color: green;"> </span></b> <br/>
+                            <input id="wcsLatSlider" style="width: 55%;" type="text" data-slider-tooltip="hide"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-right: 10px;">Trimming On <span style="color: blue;">Longitude Axis</span>:</label> <b><span id="wcsSelectedLong" class="selected-text" style="float: right; color: blue;"> </span></b> <br/>
+                            <input id="wcsLongSlider" style="width: 55%;" type="text" data-slider-tooltip="hide" />
+                        </div>
+
+                    </div>
+
+                    <ul class="nav nav-tabs" style="padding-top: 10px;" id="tabs">
+                        <li class="active"><a data-toggle="tab" href="#wcsTab">OGC WCS</a></li>                                                
+                        <li><a data-toggle="tab" href="#wcpsTab">OGC WCPS</a></li>       
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <!-- Bands combination -->
+                        <div id="wcsTab" class="section-container tab-pane active">
+
+                            <p class="top-left-heading">Bands Combinations</p>
+
+                            <div class="row bands">
+                                <label style="margin-right: 10px; color:red;">Red Band:</label> 
+                                <select style="float: right;" id="wcsRedBandSelector">
+                                    <option value="0">Red</option>
+                                    <option value="1">Green</option>
+                                    <option value="2">Blue</option>
+                                    <option value="3" selected>NIR</option>
+                                </select>
+                            </div>                                
+
+                            <div class="row bands">
+                                <label style="margin-right: 10px; color: green;">Green Band:</label> 
+                                <select style="float: right;" id="wcsGreenBandSelector">
+                                    <option value="0" selected>Red</option>
+                                    <option value="1">Green</option>
+                                    <option value="2">Blue</option>
+                                    <option value="3">NIR</option>
+                                </select>
+                            </div>                                
+
+                            <div class="row bands">
+                                <label style="margin-right: 10px; color:blue;">Blue Band:</label> 
+                                <select style="float: right;" id="wcsBlueBandSelector">
+                                    <option value="0">Red</option>
+                                    <option value="1" selected>Green</option>
+                                    <option value="2">Blue</option>
+                                    <option value="3">NIR</option>
+                                </select>
+                            </div>                           
+
+                            <!-- WKT clipping -->
+                            <div class="section-container" style="display: none;"> 
+                                
+                                <div class="row bands">
+
+                                    <div class="form-group">
+                                        <label style="margin-right: 10px; ">Clip result by WKT:</label> 
+                                        <select style="float: right; margin-top: -5px;" id="wcsClipByWKT">
+                                            <option value="no" selected>No clip</option>
+                                            <option value="polygon">By WKT Polygon</option>
+                                            <option value="multipolygon">By WKT Multipolygon</option>
+                                        </select>
+
+                                        <textarea class="form-control" rows="5" id="wcsWKTTextArea" style="margin-top: 10px;" placeholder="You can input your own WKT Polygon / Multiypolygon besides selecting from the *Clip result by WKT* dropdown above. WKT must intersect with the Latitude / Longitude trimming subsets."></textarea>
+                                    </div> 
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- WCPS tab -->
+                        <div id="wcpsTab" class="tab-pane" style="max-height: 30vh; overflow-y: scroll;">
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/1.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="1" checked>1. NDVI not colorized</label>
+                                    </div>
+                                    <p>NDVI: Normalized Density Vegetation Index not colorized.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="1">Show WCPS Query</button>
+                                </div>
+                            </div>
+                            
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/2.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="2">2. NDVI colorized</label>
+                                    </div>
+                                    <p>NDVI: Normalized Density Vegetation Index colorized by GDAL Color Palette Table format.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="2">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/3.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="3">3. Color Infrared Vegetation</label>
+                                    </div>
+                                    <p> NIR false color composite shown above healthy vegetation appears bright red.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="3">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/4.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="4">4. LAI colorized</label>
+                                    </div>
+                                    <p>LAI: Leaf area index is a dimensionless quantity that characterizes plant canopies.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="4">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/5.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="5">5. Water classification</label>
+                                    </div>
+                                    <p>A simple water mask to filter water body over ground.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="5">Show WCPS Query</button>
+                                </div>
+                            </div>                            
+                            
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/6.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="6">6. Road classification</label>
+                                    </div>
+                                    <p>Classify roads over ground as a mask.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="6">Show WCPS Query</button>
+                                </div>
+                            </div>    
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/7.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="7">7. Land cover version 1</label>
+                                    </div>
+                                    <p>Classify vegetation, dry soil and water.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="7">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/8.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="8">8. Land cover version 2</label>
+                                    </div>
+                                    <p>Classify vegetation, dry soil and water with more details.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="8">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/9.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="9">9. Land cover version 3</label>
+                                    </div>
+                                    <p>Classify vegetation, dry soil and water with more details.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="9">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/10.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="10">10. Land cover version 4</label>
+                                    </div>
+                                    <p>Classify vegetation, dry soil and water with more details.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="10">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/11.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="11">11. Low quality land</label>
+                                    </div>
+                                    <p>Low quality land highlighted in red color.</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="11">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/12.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="12">12. Downscaled result</label>
+                                    </div>
+                                    <p>Scale result to smaller width and height to return quickly</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="12">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/13.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="13">13. Clip by polygon</label>
+                                    </div>
+                                    <p>Clip the result by a WKT Polygon vector</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="13">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/14.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="14">14. Calculate NDVI over 2016</label>
+                                    </div>
+                                    <p>Calculate the average of NDVI for 3 time slices in 2016</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="14">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/15.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="15">15. Difference NDVI</label>
+                                    </div>
+                                    <p>Show the difference NDVI between September and May in 2016</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="15">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/16.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="16">16. Change detection</label>
+                                    </div>
+                                    <p>Change detection between 2018 and 2014</p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="16">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+                            <div class="wcps-demo-container">
+                                <img src="asset/wcps/17.png" class="wcps-demo-icon">
+                                <div class="wcps-demo-text">
+                                    <div class="radio">
+                                        <label class="wcps-demo-radio-label"><input type="radio" name="wcpsDemoRadio" value="17">17. Difference True Color</label>
+                                    </div>
+                                    <p>Difference in True Color between October, 2015 and May, 2016 </p>
+                                    <button type="button" class="btn btn-info wcps-info-button" data="17">Show WCPS Query</button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="row bands" style="padding: 10px 0px;">
+                        <button type="button" id="wcsShowResult" class="btn btn-danger" style="float: right;">Show Result</button>
+                        <img id="loading" src="asset/earth-spinning-rotating-animation-24.gif" 
+                            style="width: 200px; position: absolute; left: 12vw; bottom: 20vh; display: none"/>
+                    </div>        
+
+                    <div class="section-container" style="margin-top: 5px;">                      
+                        <p class="top-left-heading">Get Pixel Values</p>
+                        <!-- <p style="font-size: 12px;">Display OGC WCS / WCPS result on the map first, then click on a position <b>inside</b> the result to fetch values</p>- -->
+
+                        <span style="color:red;">Red Value:</span> <span id="clickedRedValue"> </span> <br/>
+                        <span style="color:green;">Green Value:</span> <span id="clickedGreenValue"> </span> <br/>
+                        <span style="color:blue;">Blue Value:</span> <span id="clickedBlueValue"> </span> <br/>
+                            
+                    </div>
+                
+
+                </div>
+            </div>
+
+            <div class="col-sm-9" style="background-color: black;" id="canvasParent">
+
+                <div id="top-center">
+
+                    <div id="top-center-middle">
+
+                        <div class="row">
+                            <div class="col-sm-4">
+
+                                <label style="margin-top: 1px;">
+                                    <input type="checkbox" class="checkbox-layers" value="ndvi" checked>
+                                    <span class="layer-name">OGC WMS KOMPSAT-3 Layer</span>
+                                </label>
+                                
+                            </div>
+
+                            <div class="col-sm-8" style="margin-left: -20px; margin-top: 2px;">
+
+                                <span style="margin-right: 10px;">Select date to display:  <b><span id="wmsSelectedDate" style="float: right;"> </span></b> </span>
+                                <input id="wmsDateSlider" type="text" style="width: 50%;" data-slider-tooltip="hide" />
+                               
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <canvas id="canvasOne" style="width: 100%; height: 100%;">
+                    Your browser does not support HTML5 Canvas.
+                </canvas>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script src="jquery-1.12.4/jquery.min.js" type="text/javascript"></script>
+    <script src="bootstrap-3.3.4/bootstrap.min.js" type="text/javascript"></script>
+    <script src="web-world-wind/worldwind.min.js" type="text/javascript"></script>
+    <script src="bootstrap-slider-5.0.13/bootstrap-slider.min.js"></script>
+    <script src="wcps_template.js"/></script>
+
+    <script>
+        var PETASCOPE_ENDPOINT = "http://185.178.87.50:8082/rasdaman/ows";
+        var COVERAGE_ID = "foss4g";
+
+        var wwd = new WorldWind.WorldWindow("canvasOne");
+
+        var wmsLayer = null;
+        var wmsPolygonLayer = null;
+
+        var wcsLayer = null;
+        var wcsPolygonLayer = null;
+
+        var wmsSelectedDate = "";        
+
+        // WCS
+        var wcsSelectedDate = "";
+        // Coverage's bbox by Lat/Long axes
+        var wcsLatMin = 48.211179681524804, wcsLatMax = 48.404409681524804;
+        var wcsLongMin = 11.651090810635639, wcsLongMax =  11.956580810635639;
+        
+        var wcsLongLatStep = 0.0005;
+
+        // Only allow to test in a small subset (axes)
+        var wcsSelectedLatMin = 48.275;
+        var wcsSelectedLatMax = 48.3015;
+
+        var wcsSelectedLongMin = 11.785;
+        var wcsSelectedLongMax = 11.835;
+
+        // Only when one WCS / WCPS result is shown then this is set to true
+        var showTheImageResult = false;
+
+        var selectedDateSliderIndex = 0;
+
+        var wcsSelectedDateSliderIndex = 0;
+
+        // There are 10 scenes with 4 bands: red, green, blue, nir
+        // each scene it needs to divide by different division
+        var BAND_DIVISIONS = {
+            0: [15, 15, 30, 15],
+            1: [17, 19, 25, 17],
+            2: [7, 7, 15, 7],
+            3: [18, 18, 20, 18],
+            4: [18, 18, 20, 18],
+            5: [13, 13, 25, 13],
+            6: [14, 14, 17, 14],
+            7: [22, 22, 25, 22],
+            8: [17, 17, 35, 17],
+            9: [14, 14, 17, 14]
+        };
+        
+        $(document).ready(function() {
+
+            fetchDateCoefficients();
+
+            initWMSCheckbox();
+            initDataSlidersEvent();
+            initWebWorldWind();
+
+            initWCSWKTSelectorEvent();
+            initWCSShowResulButtonEvent();
+
+            initWCPSShowQueryEvent();
+        });
+
+        // Fetch date coefficients of a coverage for a specific UTM zone
+        function fetchDateCoefficients() {            
+            $.ajax({
+                url: PETASCOPE_ENDPOINT + "?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=" + COVERAGE_ID,
+                dataType: "xml",
+                async: false,
+                success: function(xmlDoc) {
+                    dateCoefficients = [];
+
+                    var coefficients = xmlDoc.evaluate("//*[local-name()='coefficients']", xmlDoc,
+                        null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.firstChild.nodeValue.replace(/"/g, "");
+                    var tmp_array = coefficients.split(" ");
+
+                    for (var i = 0; i < tmp_array.length; i++) {
+                        // Only extract date
+                        var date = tmp_array[i].split("T")[0];
+                        dateCoefficients.push(date);
+                    }
+
+                    wmsSelectedDate = dateCoefficients[selectedDateSliderIndex];
+                    wcsSelectedDate = dateCoefficients[selectedDateSliderIndex];
+
+                    // Init selected date on date slider
+                    initDataSlider("wmsDateSlider", dateCoefficients.length);
+                    initDataSlider("wcsDateSlider", dateCoefficients.length);
+
+                    $("#wmsSelectedDate").text(wmsSelectedDate);
+                    $("#wcsSelectedDate").text(wcsSelectedDate);
+                }
+            });
+        }
+
+        function initWMSCheckbox() {
+            // Hide / show layers
+            $(".checkbox-layers").change(function() {
+                // Layer is unchecked
+                if (!this.checked) {
+                    wmsLayer.enabled = false;
+                } else {
+                    wmsLayer.enabled = true;
+                }
+            });
+        }
+
+        function initDataSlider(sliderId, numberOfCoefficients) {
+            // Init selected date on date slider
+            $("#" + sliderId).slider({
+                min: 0,
+                max: numberOfCoefficients - 1,
+                value: 0
+            });
+        }
+
+        function initDataSlidersEvent() {
+
+            // WMS
+            $("#wmsDateSlider").on("change", function(slideEvt) {
+                var newIndex = slideEvt.value.newValue;
+
+                wmsSelectedDate = dateCoefficients[newIndex];
+                $("#wmsSelectedDate").text(wmsSelectedDate);
+
+                // Get new tiles from WMS layer for new selected data
+                reloadWMSLayer(newIndex, wmsSelectedDate);
+            });
+
+            // WCS
+            $("#wcsDateSlider").on("change", function(slideEvt) {
+                var newIndex = slideEvt.value.newValue;
+
+                wcsSelectedDateSliderIndex = newIndex;
+                
+                wcsSelectedDate = dateCoefficients[newIndex];
+                $("#wcsSelectedDate").text(wcsSelectedDate);                
+            });
+
+            $("#wcsLatSlider").slider({
+                range: true,
+                step: wcsLongLatStep,
+                min: wcsSelectedLatMin,
+                max: wcsSelectedLatMax,
+                value: [wcsSelectedLatMin, wcsSelectedLatMax]
+            });
+            $("#wcsLatSlider").on("change", function(slideEvt) {
+                var newIndexPair = slideEvt.value.newValue;
+                $("#wcsSelectedLat").text(newIndexPair[0] + " : " + newIndexPair[1]);
+            });
+
+            $("#wcsSelectedLat").text(wcsSelectedLatMin + " : " + wcsSelectedLatMax);
+
+            $("#wcsLongSlider").slider({
+                range: true,
+                step: wcsLongLatStep,
+                min: wcsSelectedLongMin,
+                max: wcsSelectedLongMax,
+                value: [wcsSelectedLongMin, wcsSelectedLongMax]
+            });
+            $("#wcsLongSlider").on("change", function(slideEvt) {
+                var newIndexPair = slideEvt.value.newValue;
+                $("#wcsSelectedLong").text(newIndexPair[0] + " : " + newIndexPair[1]);
+            });
+
+            $("#wcsSelectedLong").text(wcsSelectedLongMin + " : " + wcsSelectedLongMax);
+        }
+
+        function initWebWorldWind() {
+            WorldWind.Logger.setLoggingLevel(WorldWind.Logger.LEVEL_ERROR);           
+
+            var goToAnimator = new WorldWind.GoToAnimator(wwd);
+            // goToAnimator.travelTime = 0000;
+
+            goToAnimator.goTo(new WorldWind.Location(48.30, 11.80), function() {
+                wwd.navigator.range = 26000;
+            });           
+          
+
+            var layers = [{
+                layer: new WorldWind.BingAerialWithLabelsLayer(null),
+                enabled: true
+            }, {
+                layer: new WorldWind.CompassLayer(),
+                enabled: true
+            }, {
+                layer: new WorldWind.CoordinatesDisplayLayer(wwd),
+                enabled: true
+            }, {
+                layer: new WorldWind.ViewControlsLayer(wwd),
+                enabled: true
+            }];
+
+            for (var l = 0; l < layers.length; l++) {
+                layers[l].layer.enabled = layers[l].enabled;
+                wwd.addLayer(layers[l].layer);
+            }
+
+            // Load WMS layer
+            reloadWMSLayer(0, wmsSelectedDate);                
+
+            var textLayer = new WorldWind.RenderableLayer("Airport");
+            var peakPosition = new WorldWind.Position(48.3526, 11.7684, 2000);
+            var text = new WorldWind.GeographicText(peakPosition, "Germany - Munich Airport");
+            var textAttributes = new WorldWind.TextAttributes(null);
+            textAttributes.color = WorldWind.Color.YELLOW;
+            textAttributes.scale = 1.5;
+            text.attributes = textAttributes;
+            textLayer.addRenderable(text);
+            wwd.addLayer(textLayer);
+
+            // attach event to get the location of clicked coordinates on WebWorldWind
+            var clickRecognizer = new WorldWind.ClickRecognizer(wwd, handleClickOnWebWorldWind);
+        }
+
+        // Click on Web World Wind to get the value
+        function handleClickOnWebWorldWind(recognizer) {
+            
+            // Obtain the event location.
+            var x = recognizer.clientX,
+                y = recognizer.clientY;
+
+            // Perform the pick. Must first convert from window coordinates to canvas coordinates, which are
+            // relative to the upper left corner of the canvas rather than the upper left corner of the page.
+            var pickList = wwd.pick(wwd.canvasCoordinates(x, y));
+
+            // NOTE: click only works on WebWorldWind terrain layer
+            var index = pickList.objects.length - 1;
+            var position = pickList.objects[index].position;
+
+            var lat = position.latitude;
+            var long = position.longitude;
+
+            if ((wcsSelectedLatMin <= lat && lat <= wcsSelectedLatMax) && (wcsSelectedLongMin <= long && long <= wcsSelectedLongMax)) {
+
+                // Valid coordinate
+                var dateSubset = $("#wcsSelectedDate").text();
+                var wcpsQuery = generateWCPSQuery(dateSubset, lat, long, "csv");
+
+                $.ajax({
+                    url: PETASCOPE_ENDPOINT,
+                    type: "post",
+                    data: "query=" + wcpsQuery ,
+                    success: function (response) {
+
+                        var tmpArray = response.replace(/"/g, "").split(" ");
+                        $("#clickedRedValue").text(parseFloat(tmpArray[0]).toFixed(2));
+                        $("#clickedGreenValue").text(parseFloat(tmpArray[1]).toFixed(2));
+                        $("#clickedBlueValue").text(parseFloat(tmpArray[2]).toFixed(2));
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Failed to get values for bands. Detail Error: " + textStatus);                        
+                    }
+                });
+
+            }
+        }
+
+        // WMS
+        function reloadWMSLayer(dateIndex, date) {
+            
+            var layerNamesToRequest = [COVERAGE_ID];
+
+            var config = {
+                title: "WMS KOMPSAT 3",
+                version: "1.3.0",
+                service: PETASCOPE_ENDPOINT,
+                layerNames: layerNamesToRequest,
+                sector: new WorldWind.Sector(wcsLatMin, wcsLatMax, wcsLongMin, wcsLongMax),
+                levelZeroDelta: new WorldWind.Location(36, 36),
+                numLevels: 15,
+                format: "image/png",
+                styleNames: "s" + dateIndex,
+                size: 256
+            };
+
+            wwd.removeLayer(wmsLayer);
+            wmsLayer = new WorldWind.WmsLayer(config, `"${date}"`);                        
+            wwd.insertLayer(5, wmsLayer);
+
+            wwd.removeLayer(wmsPolygonLayer);
+            drawPolygon("wms", wcsLatMin, wcsLongMin, wcsLatMax, wcsLongMax, WorldWind.Color.YELLOW);
+        }
+
+        // WCS
+        function initWCSWKTSelectorEvent() {
+
+            $("#wcsClipByWKT").on('change', function() {
+                var value = this.value;
+                var textArea = $("#wcsWKTTextArea");
+
+                if (value === "no") {
+                    textArea.text("");
+                } else if (value === "polygon") {
+                    textArea.text("POLYGON((48.3061 11.7423, 48.3134 11.7438, 48.3150 11.7547, 48.3102 11.7536, 48.3061 11.7423))");
+                } else {
+                    textArea.text("MULTIPOLYGON( ((48.3061 11.7423, 48.3134 11.7438, 48.3129 11.7470, 48.3104 11.7474)), ((48.3101 11.7493, 48.3148 11.7491, 48.3133 11.7516)) )");
+                }
+            });
+
+        }
+        
+        // WCPS
+        function initWCPSShowQueryEvent() {
+            $(".wcps-info-button").click(function() {
+                var index = $(this).attr("data");
+                var wcpsQueryTemplate = WCPS_QUERIES_TEMPLATE[index];
+                alert(wcpsQueryTemplate);
+            });
+        }
+
+        // Return a WCPS query from input components
+        function generateWCPSQuery(dateSubset, latSubset, longSubset, encodeFormat) {
+
+            var redBand = $("#wcsRedBandSelector").val();
+            var greenBand = $("#wcsGreenBandSelector").val();
+            var blueBand = $("#wcsBlueBandSelector").val();
+
+            var divisionsArray = BAND_DIVISIONS[wcsSelectedDateSliderIndex];
+
+            if (redBand == "0") {
+                redBand = redBand + " / " + divisionsArray[0];
+            } else if (redBand == "1") {
+                redBand = redBand  + " / " + divisionsArray[1];
+            } else if (redBand == "2") {
+                redBand = redBand  + " / " + divisionsArray[2];
+            } else if (redBand == "3") {
+                redBand = redBand  + " / " + divisionsArray[3];
+            }
+
+            if (greenBand == "0") {
+                greenBand = greenBand + " / " + divisionsArray[0];
+            } else if (greenBand == "1") {
+                greenBand = greenBand  + " / " + divisionsArray[1];
+            } else if (greenBand == "2") {
+                greenBand = greenBand  + " / " + divisionsArray[2];
+            } else if (greenBand == "3") {
+                greenBand = greenBand  + " /" + divisionsArray[3];
+            }
+
+            if (blueBand == "0") {
+                blueBand = blueBand + " / " + divisionsArray[0];
+            } else if (blueBand == "1") {
+                blueBand = blueBand  + " / " + divisionsArray[1];
+            } else if (blueBand == "2") {
+                blueBand = blueBand  + " / " + divisionsArray[2];
+            }  else if (blueBand == "3") {
+                blueBand = blueBand  + " / " + divisionsArray[3];
+            }
+
+            var subsetExpression = `c[ansi("${dateSubset}"), Lat(${latSubset}), Long(${longSubset})]`;
+
+            var coreExpression = `{ red: (unsigned char) (${subsetExpression}.${redBand});
+                                green: (unsigned char) (${subsetExpression}.${greenBand});
+                                blue: (unsigned char) (${subsetExpression}.${blueBand}) }`;
+
+            var wcpsQuery = ` for c in (${COVERAGE_ID}) return encode(
+                            ${coreExpression}
+                            , "${encodeFormat}", "nodata=0") `;
+
+            // Tab Index = 0: WCS, Tab Index = 1: WCPS
+            var selectedTab = $("ul#tabs li.active").index();
+            if (selectedTab === 1) {
+                // Then, get the selected WCPS demo query template
+                var demoIndex = $("input[name='wcpsDemoRadio']:checked").val();
+                var wcpsQueryTemplate = WCPS_QUERIES_TEMPLATE[demoIndex];
+                subsetExpression = `c[ansi("${dateSubset}"), Lat(${latSubset}), Long(${longSubset})]`;
+                var tmp = wcpsQueryTemplate.replace(/C.0/g, subsetExpression + ".0 / " + divisionsArray[0])
+                                            .replace(/C.1/g, subsetExpression + ".1 / " + divisionsArray[1])
+                                            .replace(/C.2/g, subsetExpression + ".2 / " + divisionsArray[2])
+                                            .replace(/C.3/g, subsetExpression + ".3 / " + divisionsArray[3]);
+            
+                // For demo with fixed date
+                tmp = tmp.replace(/SUBSET/g, `Lat(${latSubset}), Long(${longSubset})`);
+                
+                wcpsQuery = ` for c in (${COVERAGE_ID}) return ` + tmp;
+                wcpsQuery = wcpsQuery.replace("png", encodeFormat);
+            }                        
+
+            return wcpsQuery;
+        }
+
+        // Handle event when clicking on Show Result button
+        function initWCSShowResulButtonEvent() {
+
+            $("#wcsShowResult").click(function() {
+
+                var dateSubset = $("#wcsSelectedDate").text();
+                var latSubset = $("#wcsSelectedLat").text();
+                var longSubset = $("#wcsSelectedLong").text();                
+
+                // Also set WMS date according to the selected WCS date
+                var newIndex = 0;
+                for (var i = 0; i < dateCoefficients.length; i++) {
+                    if (dateCoefficients[i] == dateSubset) {
+                        newIndex = i;
+                        break;
+                    }
+                }
+
+                $("#wmsDateSlider").slider("setValue", newIndex);
+             
+                wmsSelectedDate = dateCoefficients[newIndex];
+                $("#wmsSelectedDate").text(wmsSelectedDate);
+
+                // Get new tiles from WMS layer for new selected data
+                reloadWMSLayer(newIndex, wmsSelectedDate);
+
+                var wcpsQuery = generateWCPSQuery(dateSubset, latSubset, longSubset, "png");
+                displayQueryResultOnGlob(wcpsQuery);                 
+                
+            });
+        }
+
+        // Draw the polygon around the 2D image result
+        function drawPolygon(service, minLat, minLong, maxLat, maxLong, color) {
+
+            var locations = [];
+
+            locations.push(new WorldWind.Location(minLat, minLong));
+            locations.push(new WorldWind.Location(maxLat, minLong));
+            locations.push(new WorldWind.Location(maxLat, maxLong));
+            locations.push(new WorldWind.Location(minLat, maxLong));
+            locations.push(new WorldWind.Location(minLat, minLong));
+            
+            var polygonAttributes = new WorldWind.ShapeAttributes(null);
+            polygonAttributes.drawInterior = true;
+            polygonAttributes.drawOutline = true;
+            polygonAttributes.outlineWidth = 2;
+            polygonAttributes.outlineColor = color;
+            polygonAttributes.interiorColor = new WorldWind.Color(0, 1, 1, 0);
+            polygonAttributes.applyLighting = true;
+
+            var surfaceImage = new WorldWind.SurfacePolygon(locations, polygonAttributes);
+            if (service === "wms") {                
+                wmsPolygonLayer = new WorldWind.RenderableLayer();
+                wmsPolygonLayer.displayName = "WMS Polygon Around Result Image";
+                wmsPolygonLayer.addRenderable(surfaceImage);
+                wwd.addLayer(wmsPolygonLayer);
+            } else if (service === "wcs") {
+                wcsPolygonLayer = new WorldWind.RenderableLayer();
+                wcsPolygonLayer.displayName = "WCPS Polygon Around Result Image";
+                wcsPolygonLayer.addRenderable(surfaceImage);
+                wwd.addLayer(wcsPolygonLayer);
+            }            
+        }
+
+        // Send a 2D WCPS query and display result on globe (WCS/WCPS)
+        function displayQueryResultOnGlob(wcpsQuery) {
+           
+            var params = "query=" + wcpsQuery;
+
+            $("#loading").show();
+
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'arraybuffer';
+            xhr.onreadystatechange = function () {
+
+                if (xhr.readyState === 4) {
+
+                    $("#loading").hide();
+
+                    if (xhr.status !== 200) {         
+                        var errorMessage = String.fromCharCode.apply(null, new Uint8Array(xhr.response));
+                        alert("The selected Latitude / Longitude trimming subsets do not intersect with WKT Polygon / Multipolygon.\n\nError detail: " + errorMessage);                        
+                        return;
+                    }  
+        
+                    var blb = new Blob([xhr.response], { type: 'image/png' });
+                    var url = (window.URL || window.webkitURL).createObjectURL(blb);                    
+                    var image = new Image();
+                    image.src = url;
+
+                    var latArray = $("#wcsSelectedLat").text().split(" : ");
+                    var longArray = $("#wcsSelectedLong").text().split(" : ");
+                                        
+                    var minLat = parseFloat(latArray[0]);
+                    var maxLat = parseFloat(latArray[1]);
+                    var minLong = parseFloat(longArray[0]);
+                    var maxLong = parseFloat(longArray[1]);
+                    var centerLat = (minLat + maxLat) / 2;
+                    var centerLong = (minLong + maxLong) / 2;
+
+                    if (wcsLayer != null) {
+                        wwd.removeLayer(wcsLayer);
+                    }
+
+                    wwd.removeLayer(wcsPolygonLayer);
+
+                    // First draw the image
+                    var surfaceImage = new WorldWind.SurfaceImage(new WorldWind.Sector(minLat, maxLat, minLong, maxLong), new WorldWind.ImageSource(image));
+                    wcsLayer = new WorldWind.RenderableLayer();
+                    wcsLayer.displayName = "WCPS Result";
+                    wcsLayer.addRenderable(surfaceImage);
+                    wwd.addLayer(wcsLayer);
+
+                    // Then draw the polygon around image
+                    drawPolygon("wcs", minLat, minLong, maxLat, maxLong, WorldWind.Color.GREEN);
+
+                    wwd.navigator.lookAtLocation = new WorldWind.Location(centerLat, centerLong);
+                    wwd.redraw();
+                    
+                    // At least one image result is shown
+                    showTheImageResult = true;
+
+                    wwd.navigator.range = 4500;
+                }
+            }
+
+            xhr.open('POST', PETASCOPE_ENDPOINT);
+            xhr.send(params);
+        }
+
+
+    </script>
+
+</body>
+
+</html>
