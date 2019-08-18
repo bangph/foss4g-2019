@@ -1,3 +1,5 @@
+Authtor: Bang Pham Huu - email: b.phamhuu@jacobs-univeristy.de
+
 1) Solution description:
 
     Provide a demo system that enables the evaluation of trade-offs between land uses for agriculture, forestry. The system tries to answers
